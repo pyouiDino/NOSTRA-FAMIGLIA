@@ -8,3 +8,5 @@ const firebaseConfig = {
 };
 
 const SUPER_ADMIN_EMAIL = "pyoui.gaming@gmail.com";
+
+firebase.initializeApp(firebaseConfig);
