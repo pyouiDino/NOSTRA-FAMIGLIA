@@ -1,50 +1,40 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // ---- Fonctions utilitaires ----
     function isAuth() { return request.auth != null; }
-    function uid()    { return request.auth.uid; }
-    function userDoc() {
-      return get(/databases/$(database)/documents/users/$(uid())).data;
-    }
-    function role()   { return userDoc().role; }
-    function isAdmin()      { return role() == 'admin' || role() == 'superadmin'; }
+    function uid() { return request.auth.uid; }
+    function userDoc() { return get(/databases/$(database)/documents/users/$(uid())).data; }
+    function role() { return userDoc().role; }
+    function isAdmin() { return role() == 'admin' || role() == 'superadmin'; }
     function isSuperAdmin() { return role() == 'superadmin'; }
 
-    // ---- Utilisateurs ----
     match /users/{userId} {
       allow read: if isAuth();
-      allow create: if isAuth() && (
-        request.auth.uid == userId ||
-        isAdmin()
-      );
-      allow update: if isAuth() && (
-        request.auth.uid == userId ||
-        isAdmin()
-      );
+      allow create: if isAuth();
+      allow update: if isAuth() && (request.auth.uid == userId || isAdmin());
       allow delete: if isAuth() && isSuperAdmin();
     }
-
-    // ---- Zones ----
     match /zones/{zoneId} {
       allow read: if isAuth();
-      allow write: if isAuth() && userDoc().perms.zones == true;
+      allow write: if isAuth();
     }
-
-    // ---- Points ----
     match /points/{pointId} {
-      allow read: if isAuth() && userDoc().perms.seePoints == true;
-      allow create: if isAuth() && userDoc().perms.signal == true;
+      allow read: if isAuth();
+      allow create: if isAuth();
       allow update, delete: if isAuth() && isAdmin();
     }
-
-    // ---- Codes d'invitation ----
     match /invite_codes/{code} {
       allow read: if isAuth();
       allow create: if isAuth() && isAdmin();
-      allow update: if isAuth(); // pour marquer "used"
+      allow update: if isAuth();
       allow delete: if isAuth() && isAdmin();
+    }
+    match /roles/{roleId} {
+      allow read: if isAuth();
+      allow write: if isAuth() && isAdmin();
+    }
+    match /personal_maps/{userId} {
+      allow read, write: if isAuth() && (request.auth.uid == userId || isAdmin());
     }
   }
 }
