@@ -2,214 +2,304 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>GTA V — Zone Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
+<!-- ===================== AUTH ===================== -->
 <div id="auth-screen" class="screen active">
-  <div class="auth-bg">
-    <div class="scanlines"></div>
-    <div class="grid-overlay"></div>
-  </div>
-  <div class="auth-box">
-    <div class="logo">
-      <span class="logo-gta">GTA V</span>
-      <span class="logo-sep">//</span>
-      <span class="logo-sub">ZONE TRACKER</span>
+  <div class="auth-bg"></div>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32"><polygon points="16,2 30,28 2,28" fill="none" stroke="#f5c518" stroke-width="2"/><polygon points="16,10 24,26 8,26" fill="rgba(245,197,24,0.15)" stroke="#f5c518" stroke-width="1"/></svg>
+      <div>
+        <div class="auth-logo-title">ZONE TRACKER</div>
+        <div class="auth-logo-sub">GTA V — Los Santos</div>
+      </div>
     </div>
     <div class="auth-tabs">
-      <button class="tab-btn active" onclick="showTab('login')">CONNEXION</button>
-      <button class="tab-btn" onclick="showTab('register')" id="tab-register" style="display:none">INSCRIPTION</button>
+      <button class="atab active" id="atab-login" onclick="switchAuthTab('login')">Connexion</button>
+      <button class="atab" id="atab-register" onclick="switchAuthTab('register')">Inscription</button>
     </div>
-    <div id="tab-login" class="tab-panel active">
-      <div class="field">
-        <label>IDENTIFIANT</label>
-        <input type="text" id="login-email" placeholder="email ou pseudo" autocomplete="username">
-      </div>
-      <div class="field">
-        <label>MOT DE PASSE</label>
-        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
-      </div>
-      <div id="login-error" class="error-msg"></div>
-      <button class="btn-primary" onclick="doLogin()">ACCÉDER AU SYSTÈME</button>
+    <!-- LOGIN -->
+    <div id="auth-login" class="auth-form active">
+      <div class="field"><label>Pseudo</label><input id="l-pseudo" type="text" placeholder="votre pseudo" autocomplete="username"></div>
+      <div class="field"><label>Mot de passe</label><input id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <div id="l-err" class="err"></div>
+      <button class="btn-gold" onclick="doLogin()">Se connecter</button>
     </div>
-    <div id="tab-register" class="tab-panel">
-      <div class="field">
-        <label>PSEUDO</label>
-        <input type="text" id="reg-name" placeholder="votre pseudo GTA">
-      </div>
-      <div class="field">
-        <label>EMAIL</label>
-        <input type="email" id="reg-email" placeholder="votre@email.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>MOT DE PASSE</label>
-        <input type="password" id="reg-password" placeholder="min. 6 caractères" autocomplete="new-password">
-      </div>
-      <div class="field">
-        <label>CODE D'INVITATION</label>
-        <input type="text" id="reg-code" placeholder="fourni par un admin">
-      </div>
-      <div id="reg-error" class="error-msg"></div>
-      <button class="btn-primary" onclick="doRegister()">CRÉER LE COMPTE</button>
+    <!-- REGISTER -->
+    <div id="auth-register" class="auth-form">
+      <div class="field"><label>Pseudo</label><input id="r-pseudo" type="text" placeholder="votre pseudo GTA"></div>
+      <div class="field"><label>Mot de passe</label><input id="r-pass" type="password" placeholder="min. 6 caractères" autocomplete="new-password"></div>
+      <div class="field"><label>Code d'invitation</label><input id="r-code" type="text" placeholder="fourni par un admin"></div>
+      <div id="r-err" class="err"></div>
+      <button class="btn-gold" onclick="doRegister()">Créer mon compte</button>
     </div>
-    <div class="auth-footer">SYSTÈME SÉCURISÉ — ACCÈS RESTREINT</div>
   </div>
 </div>
 
-<!-- MAIN APP -->
+<!-- ===================== APP ===================== -->
 <div id="app-screen" class="screen">
-  <!-- Header -->
-  <header>
-    <div class="header-left">
-      <span class="logo-small">GTA V // ZONE TRACKER</span>
-      <span id="user-badge" class="badge"></span>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      <svg width="22" height="22" viewBox="0 0 32 32"><polygon points="16,2 30,28 2,28" fill="none" stroke="#f5c518" stroke-width="2.5"/></svg>
+      <span>ZONE TRACKER</span>
     </div>
-    <nav id="main-nav">
-      <button class="nav-btn active" onclick="showPage('map')">CARTE</button>
-      <button class="nav-btn" onclick="showPage('points')" id="nav-points" style="display:none">POINTS</button>
-      <button class="nav-btn" onclick="showPage('admin')" id="nav-admin" style="display:none">ADMIN</button>
-      <button class="nav-btn" onclick="showPage('superadmin')" id="nav-superadmin" style="display:none">SUPER ADMIN</button>
+    <nav class="sidebar-nav">
+      <button class="snav active" data-page="map" onclick="showPage('map')">
+        <span class="snav-icon">🗺️</span><span class="snav-label">Carte</span>
+      </button>
+      <button class="snav" data-page="mymap" onclick="showPage('mymap')">
+        <span class="snav-icon">📌</span><span class="snav-label">Ma carte</span>
+      </button>
+      <button class="snav" data-page="points" id="nav-points" onclick="showPage('points')" style="display:none">
+        <span class="snav-icon">⭐</span><span class="snav-label">Points</span>
+      </button>
+      <button class="snav" data-page="admin" id="nav-admin" onclick="showPage('admin')" style="display:none">
+        <span class="snav-icon">⚙️</span><span class="snav-label">Admin</span>
+      </button>
+      <button class="snav" data-page="superadmin" id="nav-sa" onclick="showPage('superadmin')" style="display:none">
+        <span class="snav-icon">👑</span><span class="snav-label">Super Admin</span>
+      </button>
     </nav>
-    <button class="logout-btn" onclick="doLogout()">DÉCONNEXION</button>
-  </header>
-
-  <!-- MAP PAGE -->
-  <div id="page-map" class="page active">
-    <div class="map-container">
-      <div class="map-toolbar">
-        <div class="toolbar-left">
-          <span class="toolbar-title">CARTE DE LOS SANTOS</span>
-          <span id="zone-count" class="zone-info"></span>
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name">—</div>
+          <div class="user-role" id="user-role">—</div>
         </div>
-        <div class="toolbar-right">
-          <div class="legend">
-            <span class="leg-item"><span class="dot dot-mine"></span>Mes zones</span>
-            <span class="leg-item"><span class="dot dot-others"></span>Autres joueurs</span>
-            <span class="leg-item"><span class="dot dot-point"></span>Point signalé</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()" title="Déconnexion">⏻</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main id="main">
+
+    <!-- ---- MAP PAGE ---- -->
+    <div id="page-map" class="page active">
+      <div class="map-topbar">
+        <div class="map-topbar-left">
+          <span class="page-title">Carte commune</span>
+          <span id="map-stats" class="map-stats"></span>
+        </div>
+        <div class="map-topbar-right">
+          <div class="layer-toggles" id="layer-toggles"></div>
+          <button class="btn-icon" onclick="toggleLegend()" title="Légende">ℹ️</button>
+        </div>
+      </div>
+      <div class="map-area" id="map-area">
+        <div class="map-inner" id="map-inner">
+          <img src="carte-routiere-gta-5.jpg" class="map-bg" id="map-bg" alt="GTA V Map" draggable="false">
+          <svg id="zone-svg" class="zone-svg"></svg>
+          <div id="points-layer" class="points-layer"></div>
+        </div>
+      </div>
+      <!-- Legend -->
+      <div id="map-legend" class="map-legend hidden">
+        <div class="legend-title">Légende</div>
+        <div class="legend-row"><span class="lswatch" style="background:rgba(74,222,128,0.5);border-color:#4ade80"></span>Mes zones explorées</div>
+        <div class="legend-row"><span class="lswatch" style="background:rgba(56,189,248,0.4);border-color:#38bdf8"></span>Zones des autres</div>
+        <div class="legend-row"><span class="lswatch" style="background:rgba(251,146,60,0.4);border-color:#fb923c"></span>Zone à rechercher</div>
+        <div class="legend-row"><span class="lswatch" style="background:rgba(245,197,24,0.35);border-color:#f5c518"></span>Plusieurs joueurs</div>
+        <div class="legend-row"><span style="font-size:16px">📍</span>Point signalé</div>
+      </div>
+    </div>
+
+    <!-- ---- MY MAP PAGE ---- -->
+    <div id="page-mymap" class="page">
+      <div class="map-topbar">
+        <div class="map-topbar-left">
+          <span class="page-title">Ma carte personnelle</span>
+          <span class="map-stats">Visible uniquement par vous et les admins</span>
+        </div>
+        <div class="map-topbar-right">
+          <button class="btn-icon" onclick="toggleMyLegend()" title="Légende">ℹ️</button>
+        </div>
+      </div>
+      <div class="map-area" id="mymap-area">
+        <div class="map-inner" id="mymap-inner">
+          <img src="carte-routiere-gta-5.jpg" class="map-bg" alt="GTA V Map" draggable="false">
+          <svg id="myzone-svg" class="zone-svg"></svg>
+          <div id="mypoints-layer" class="points-layer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- POINTS PAGE ---- -->
+    <div id="page-points" class="page">
+      <div class="inner-page">
+        <div class="inner-header">
+          <h2>Points signalés</h2>
+          <button class="btn-gold small" id="btn-add-pt" onclick="openAddPoint()" style="display:none">+ Signaler</button>
+        </div>
+        <div class="filters-row">
+          <button class="filter-btn active" onclick="filterPoints('all',this)">Tous</button>
+          <button class="filter-btn" onclick="filterPoints('collectible',this)">Collectibles</button>
+          <button class="filter-btn" onclick="filterPoints('easter_egg',this)">Easter Eggs</button>
+          <button class="filter-btn" onclick="filterPoints('secret',this)">Secrets</button>
+          <button class="filter-btn" onclick="filterPoints('autre',this)">Autres</button>
+        </div>
+        <div id="points-grid" class="points-grid"></div>
+      </div>
+    </div>
+
+    <!-- ---- ADMIN PAGE ---- -->
+    <div id="page-admin" class="page">
+      <div class="inner-page">
+        <div class="inner-header"><h2>Administration</h2></div>
+        <div class="tabs-row">
+          <button class="ptab active" onclick="showAdminTab('users')">Utilisateurs</button>
+          <button class="ptab" onclick="showAdminTab('roles')">Rôles</button>
+          <button class="ptab" onclick="showAdminTab('zones-admin')">Zones</button>
+        </div>
+        <!-- Users tab -->
+        <div id="atab-users" class="atab-panel active">
+          <div class="section-card">
+            <div class="section-title">Créer un utilisateur</div>
+            <div class="form-grid">
+              <div class="field"><label>Pseudo</label><input id="a-pseudo" type="text" placeholder="pseudo"></div>
+              <div class="field"><label>Mot de passe</label><input id="a-pass" type="password" placeholder="mot de passe"></div>
+              <div class="field"><label>Rôle</label>
+                <select id="a-role-select"></select>
+              </div>
+              <div class="field"><label>Couleur des zones</label><input id="a-color" type="color" value="#4ade80"></div>
+            </div>
+            <div id="a-err" class="err"></div>
+            <button class="btn-gold" onclick="adminCreateUser()">Générer code d'invitation</button>
+            <div id="a-code-result" class="code-result hidden"></div>
           </div>
-          <div id="map-controls" class="map-controls"></div>
-        </div>
-      </div>
-      <div class="map-wrapper">
-        <svg id="gta-map" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-          <!-- GTA 5 Map background -->
-          <defs>
-            <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-              <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,200,0,0.05)" stroke-width="0.5"/>
-            </pattern>
-          </defs>
-          <rect width="1000" height="1000" fill="#0a0f0a"/>
-          <rect width="1000" height="1000" fill="url(#grid)"/>
-          <!-- Zone grid will be generated by JS -->
-        </svg>
-      </div>
-      <!-- Zone info panel -->
-      <div id="zone-panel" class="zone-panel hidden">
-        <div class="zone-panel-header">
-          <span id="zp-name"></span>
-          <button onclick="closeZonePanel()">✕</button>
-        </div>
-        <div id="zp-status" class="zp-status"></div>
-        <div id="zp-players" class="zp-players"></div>
-        <div id="zp-actions" class="zp-actions"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- POINTS PAGE -->
-  <div id="page-points" class="page">
-    <div class="page-content">
-      <div class="page-header">
-        <h2>POINTS SIGNALÉS</h2>
-        <button id="btn-add-point" class="btn-primary small" onclick="openAddPoint()" style="display:none">+ SIGNALER UN POINT</button>
-      </div>
-      <div id="points-list" class="points-list"></div>
-    </div>
-  </div>
-
-  <!-- ADMIN PAGE -->
-  <div id="page-admin" class="page">
-    <div class="page-content">
-      <div class="page-header">
-        <h2>GESTION DES UTILISATEURS</h2>
-      </div>
-      <div class="admin-section">
-        <h3>CRÉER UN UTILISATEUR</h3>
-        <div class="admin-form">
-          <div class="field"><label>PSEUDO</label><input type="text" id="a-name" placeholder="pseudo"></div>
-          <div class="field"><label>EMAIL</label><input type="email" id="a-email" placeholder="email"></div>
-          <div class="field"><label>MOT DE PASSE</label><input type="password" id="a-pass" placeholder="mot de passe"></div>
-          <div class="perms-grid">
-            <label class="perm-toggle"><input type="checkbox" id="p-zones" checked><span>Sélectionner des zones</span></label>
-            <label class="perm-toggle"><input type="checkbox" id="p-see-others" checked><span>Voir zones des autres</span></label>
-            <label class="perm-toggle"><input type="checkbox" id="p-signal" checked><span>Signaler des points</span></label>
-            <label class="perm-toggle"><input type="checkbox" id="p-see-points" checked><span>Voir les points trouvés</span></label>
+          <div class="section-card">
+            <div class="section-title">Utilisateurs existants</div>
+            <div id="users-list"></div>
           </div>
-          <div id="admin-create-error" class="error-msg"></div>
-          <button class="btn-primary" onclick="adminCreateUser()">CRÉER L'UTILISATEUR</button>
+        </div>
+        <!-- Roles tab -->
+        <div id="atab-roles" class="atab-panel">
+          <div class="section-card">
+            <div class="section-title">Créer un rôle</div>
+            <div class="form-grid">
+              <div class="field"><label>Nom du rôle</label><input id="role-name" type="text" placeholder="ex: Explorateur"></div>
+              <div class="field"><label>Couleur</label><input id="role-color" type="color" value="#38bdf8"></div>
+            </div>
+            <div class="perms-grid">
+              <label class="ptoggle"><input type="checkbox" id="rp-zones" checked><span>Sélectionner zones</span></label>
+              <label class="ptoggle"><input type="checkbox" id="rp-see-others" checked><span>Voir zones autres</span></label>
+              <label class="ptoggle"><input type="checkbox" id="rp-signal" checked><span>Signaler points</span></label>
+              <label class="ptoggle"><input type="checkbox" id="rp-see-points" checked><span>Voir points</span></label>
+              <label class="ptoggle"><input type="checkbox" id="rp-mymap"><span>Carte personnelle</span></label>
+            </div>
+            <button class="btn-gold" onclick="createRole()">Créer le rôle</button>
+          </div>
+          <div class="section-card">
+            <div class="section-title">Rôles existants</div>
+            <div id="roles-list"></div>
+          </div>
+        </div>
+        <!-- Zones admin tab -->
+        <div id="atab-zones-admin" class="atab-panel">
+          <div class="section-card">
+            <p style="color:var(--text-dim);font-size:14px;margin-bottom:16px">Cliquez sur une zone dans la carte pour la modifier. Vous pouvez changer la couleur d'un joueur ou marquer une zone "à rechercher".</p>
+            <div class="field"><label>Joueur à modifier</label><select id="admin-zone-user"></select></div>
+            <div class="field"><label>Couleur des zones de ce joueur</label><input type="color" id="admin-zone-color" value="#4ade80" oninput="updateUserZoneColor(this.value)"></div>
+          </div>
         </div>
       </div>
-      <div class="admin-section">
-        <h3>UTILISATEURS EXISTANTS</h3>
-        <div id="users-list" class="users-list"></div>
-      </div>
     </div>
-  </div>
 
-  <!-- SUPER ADMIN PAGE -->
-  <div id="page-superadmin" class="page">
-    <div class="page-content">
-      <div class="page-header">
-        <h2>SUPER ADMINISTRATION</h2>
-      </div>
-      <div class="admin-section">
-        <h3>CRÉER UN ADMIN</h3>
-        <div class="admin-form">
-          <div class="field"><label>PSEUDO</label><input type="text" id="sa-name" placeholder="pseudo admin"></div>
-          <div class="field"><label>EMAIL</label><input type="email" id="sa-email" placeholder="email admin"></div>
-          <div class="field"><label>MOT DE PASSE</label><input type="password" id="sa-pass" placeholder="mot de passe"></div>
-          <div id="sa-create-error" class="error-msg"></div>
-          <button class="btn-primary" onclick="superAdminCreateAdmin()">CRÉER L'ADMIN</button>
+    <!-- ---- SUPER ADMIN PAGE ---- -->
+    <div id="page-superadmin" class="page">
+      <div class="inner-page">
+        <div class="inner-header"><h2>Super Administration</h2></div>
+        <div class="section-card">
+          <div class="section-title">Créer un Admin</div>
+          <div class="form-grid">
+            <div class="field"><label>Pseudo</label><input id="sa-pseudo" type="text" placeholder="pseudo admin"></div>
+            <div class="field"><label>Mot de passe</label><input id="sa-pass" type="password" placeholder="mot de passe"></div>
+          </div>
+          <div id="sa-err" class="err"></div>
+          <button class="btn-gold" onclick="saCreateAdmin()">Générer code admin</button>
+          <div id="sa-code-result" class="code-result hidden"></div>
+        </div>
+        <div class="section-card">
+          <div class="section-title">Tous les comptes</div>
+          <div id="all-users-list"></div>
         </div>
       </div>
-      <div class="admin-section">
-        <h3>TOUS LES COMPTES</h3>
-        <div id="all-users-list" class="users-list"></div>
-      </div>
     </div>
-  </div>
 
-  <!-- Toast notification -->
-  <div id="toast" class="toast"></div>
+  </main>
 </div>
 
-<!-- ADD POINT MODAL -->
-<div id="modal-point" class="modal-overlay hidden">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span>SIGNALER UN NOUVEAU POINT</span>
-      <button onclick="closeAddPoint()">✕</button>
+<!-- ===== MODALS ===== -->
+
+<!-- Zone detail modal -->
+<div id="modal-zone" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-head">
+      <span id="mz-title">Zone</span>
+      <button onclick="closeModal('modal-zone')">✕</button>
     </div>
-    <div class="field"><label>NOM DU POINT</label><input type="text" id="pt-name" placeholder="ex: Collectible sous le pont"></div>
-    <div class="field"><label>ZONE</label><input type="text" id="pt-zone" placeholder="ex: Paleto Bay" id="pt-zone"></div>
-    <div class="field"><label>DESCRIPTION</label><textarea id="pt-desc" placeholder="coordonnées, indices..."></textarea></div>
-    <div class="field"><label>TYPE</label>
+    <div id="mz-body"></div>
+  </div>
+</div>
+
+<!-- Point detail modal -->
+<div id="modal-point-detail" class="modal-overlay hidden">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <span id="mpd-title"></span>
+      <button onclick="closeModal('modal-point-detail')">✕</button>
+    </div>
+    <div id="mpd-body"></div>
+  </div>
+</div>
+
+<!-- Add point modal -->
+<div id="modal-add-point" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-head">
+      <span>Signaler un point</span>
+      <button onclick="closeModal('modal-add-point')">✕</button>
+    </div>
+    <div class="field"><label>Nom</label><input id="pt-name" type="text" placeholder="ex: Graffiti caché sous le pont"></div>
+    <div class="field"><label>Zone / Lieu</label><input id="pt-zone" type="text" placeholder="ex: Paleto Bay"></div>
+    <div class="field"><label>Description</label><textarea id="pt-desc" placeholder="Coordonnées, indices pour trouver..."></textarea></div>
+    <div class="field"><label>Type</label>
       <select id="pt-type">
-        <option value="collectible">Collectible</option>
-        <option value="easter_egg">Easter Egg</option>
-        <option value="secret">Secret</option>
-        <option value="autre">Autre</option>
+        <option value="collectible">🎯 Collectible</option>
+        <option value="easter_egg">🥚 Easter Egg</option>
+        <option value="secret">🔐 Secret</option>
+        <option value="autre">📌 Autre</option>
       </select>
     </div>
-    <button class="btn-primary" onclick="submitPoint()">SOUMETTRE</button>
+    <div class="field"><label>Emoji sur la carte</label>
+      <div class="emoji-picker" id="emoji-picker"></div>
+      <input id="pt-emoji" type="hidden" value="📍">
+    </div>
+    <div class="field"><label>URL image (optionnel)</label><input id="pt-img" type="url" placeholder="https://..."></div>
+    <button class="btn-gold" onclick="submitPoint()">Soumettre</button>
   </div>
 </div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Mobile nav -->
+<nav id="mobile-nav">
+  <button onclick="showPage('map')" data-page="map" class="mnav active">🗺️<span>Carte</span></button>
+  <button onclick="showPage('mymap')" data-page="mymap" class="mnav">📌<span>La mienne</span></button>
+  <button onclick="showPage('points')" data-page="points" id="mnav-points" class="mnav" style="display:none">⭐<span>Points</span></button>
+  <button onclick="showPage('admin')" data-page="admin" id="mnav-admin" class="mnav" style="display:none">⚙️<span>Admin</span></button>
+</nav>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
